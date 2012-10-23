@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load wiki_text %}
+    {% if page %}
+
+        {% if page.is_deleted %}
+            Страница не создана.
+            <a href="{% url wiki_page.views.page_edit page_addr %}">Создать</a>
+        {% else %}
+            <div style="white-space: pre">{% autoescape off %}{{ page.text|wiki_text }}{% endautoescape %}</div>
+        {% endif %}
+    {% else %}
+        Страница не создана.
+        <a href="{% url wiki_page.views.page_edit page_addr %}">Создать</a>
+    {% endif %}
+
+
+{% endblock %}

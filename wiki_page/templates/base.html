@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css" type="text/css" media="screen, projection" />
+        <script src="{{ STATIC_URL }}js/jquery.js.1"></script>
+        <script src="{{ STATIC_URL }}js/bootstrap-collapse.js"></script>
+    </head>
+    
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="span3 bs-docs-sidebar">
+                    <ul class="nav nav-tabs nav-stacked">
+                        {% if parent_error or not page %}
+                            <li class="active"><a href="#">Просмотр</a></li>
+                            <li class="active"><a href="#">Редактировать</a></li>
+                            <li class="active"><a href="#">Добавить дочернюю страницу</a></li>
+                            <li class="active"><a href="#">Удалить страницу</a></li>
+                            {% if page %}
+                                <li><a href="{% url wiki_page.views.page_history page.address %}">История правок</a></li>
+                            {% else %}
+                                <li class="active"><a href="#">История правок</a></li>
+                            {% endif %}
+                        {% else %}
+                            <li><a href="{% url wiki_page.views.page page.address %}">Просмотр</a></li>
+                            <li><a href="{% url wiki_page.views.page_edit page.address %}">Редактировать</a></li>
+                            <li><a href="{% url wiki_page.views.page_add page.address %}">Добавить дочернюю страницу</a></li>
+                            <li><a onclick="var v=confirm('Вы уверены?'); return v;" href="{% url wiki_page.views.page_delete page.address %}">Удалить страницу</a></li>
+                            <li><a href="{% url wiki_page.views.page_history page.address %}">История правок</a></li>
+                        {% endif %}
+                </div><!--span3-->
+                <div class="span9 bs-docs-sidebar">
+                    <h1>{% if page.caption %}{{ page.caption }}{% else %}Нет заголовка{% endif %}</h1>
+                    
+                    <ul class="breadcrumb">
+                        <li><span class="divider">/</span></li>
+                        {% for p in page_parents %}
+                            <li><a href="{% url wiki_page.views.page p.address %}">{{ p.caption }}</a> <span class="divider">/</span></li>
+                        {% endfor %}
+                    </ul>
+                    
+                    {% if parent_error %}
+                        Родитель страницы не существует.
+                        <a href="{% url wiki_page.views.page_edit parent_error %}">Создать</a>
+                    {% else %}
+                        {% block content %}
+                        {% endblock %}
+                    {% endif %}
+                    
+                    {% if childs %}
+                        <div class="well">
+                        <h3>Дочерние страницы:</h3>
+                        <ul> 
+                            {% for child in childs %}
+                                <li><a href="{% url wiki_page.views.page child.address %}">{{ child.caption }}</a></li>
+                            {% endfor %}
+                        </ul>
+                        <h6>Дата последней модификации: {{ page.dt }}</h6>
+                        </div>
+                    {% endif %}
+                </div><!--span9-->
+            </div><!--row-->
+        </div><!--container-->
+    </body>
+</html>
